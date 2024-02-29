@@ -19,7 +19,7 @@ Finally, we concatenate the MFCC and wavelet coefficients to create an aggregate
 - From here, we compute the KMeans clusters from min_cluster to max_cluster number of unique labels/clusters. This allows for better generalization between audio files and eliminates the need to manually count the number of unique sounds, which is generally not feasible or efficient.
 - We then compare the silhouette scores of each clustering to identify which number of KMeans clusters most accurately corresponds to the number of distinct transients in the audio signal.
 - Finally, we graph the cluster distributions and replot the waveform with each transient colored according to its KMeans cluster.
-For this example, the purple transients correspond to the woodpecker drums
+For this example, the yellow transients correspond to the woodpecker drums
 
 ## Postprocessing:
 
