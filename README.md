@@ -1,6 +1,7 @@
 ## Preprocessing:
 
 - Audio files are loaded in with librosa.load() (librosa is the most popular audio/signal processing python library).
+- We then time stretch the signal by a factor of 1/2 to allow for better transient detection of quick subsequent drums.
 - We use the Constant-Q Transform to define an onset envelope for the audio signal and  plug that into librosa.onset_detect to detect transients with greater accuracy than just using the unaltered signal amplitudes.
 - Once the transients have been located, we record the onset frames and then convert their frame number to the corresponding time in seconds at which the transient occurs. 
 - We then use the last frame in onset_frames to denote offet_frames (i.e. the end of the transient), where the space between onset and offset frames would yield the time between transient events (what we care about for this research).
@@ -19,8 +20,7 @@ Finally, we concatenate the MFCC and wavelet coefficients to create an aggregate
 - Finally, we graph the cluster distributions and replot the waveform with each transient colored according to its KMeans cluster.
 For this example, the purple transients correspond to the woodpecker drums
 
-## Next Steps:
+## Postprocessing:
 
-- Depending on what is needed, we might need to use similar drum sounds across files to tune the transient classifier/detection to improve detection
-- For formatting, we will need a way to detect groups of drums, which should not be too hard
-- Might experiment with STFT instead of (or in addition to) wavelets and/or MFCC, but could also be an example of "if it aint broke, dont fix it."
+- We then locate the cluster that corresponds to the drum (with two clusters this would just be the second label to occur) and record all onset_times corresponding to that label along with the time between onsets
+- Finally we determine the centroid of each cluster and write that to an mp3 for qualitative assessment of the classifiers accuracy for what a cluster is
