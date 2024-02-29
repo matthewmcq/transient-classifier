@@ -1,7 +1,6 @@
 ## Preprocessing:
 
 - Audio files are loaded in with librosa.load() (librosa is the most popular audio/signal processing python library).
-- We then time stretch the signal by a factor of 1/2 to allow for better transient detection of quick subsequent drums.
 - We use the Constant-Q Transform to define an onset envelope for the audio signal and  plug that into librosa.onset_detect to detect transients with greater accuracy than just using the unaltered signal amplitudes.
 - Once the transients have been located, we record the onset frames and then convert their frame number to the corresponding time in seconds at which the transient occurs. 
 - We then use the last frame in onset_frames to denote offet_frames (i.e. the end of the transient), where the space between onset and offset frames would yield the time between transient events (what we care about for this research).
