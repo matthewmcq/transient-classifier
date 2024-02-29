@@ -1,11 +1,26 @@
-# transient-classifier
-Uses Constant Q Transform assisted transient detection along with KMeans clustering with silhouette score to identify different types of transients in an audio file based off Mel Spectrogram analysis and Wavelet features
+## Preprocessing:
 
+- Audio files are loaded in with librosa.load() (librosa is the most popular audio/signal processing python library).
+- We use the Constant-Q Transform to define an onset envelope for the audio signal and  plug that into librosa.onset_detect to detect transients with greater accuracy than just using the unaltered signal amplitudes.
+- Once the transients have been located, we record the onset frames and then convert their frame number to the corresponding time in seconds at which the transient occurs. 
+- We then use the last frame in onset_frames to denote offet_frames (i.e. the end of the transient), where the space between onset and offset frames would yield the time between transient events (what we care about for this research).
 
-## Control Flow:
+## Adding Feature Representations to each Transient:
 
-1. Audio file is read in via librosa (defauled to mono) and the CQT is applied to better isolate transients.
-2. Detect tranients with librosa.onset_detect -- play around with the args to better tailor the transient detection to the specific audio
-3. Extract the Mel-frequency cepstral coefficients (MFCC) and Wavelet features from each transient
-4. Interatively apply KMeans clustering based on the MFCC and Wavelet features using sillhouette scores to identify the best number of clusters.
-5. Alternatively, use t-SNE for alternate visualization.
+- For each transient, we compute the wavelet transform and the Mel-frequency cepstral coefficients. This allows us to group transients based on their spectral composition.
+- We then normalize the wavelet coefficients with zero padding, as some transients encode more frequency information than others.
+Finally, we concatenate the MFCC and wavelet coefficients to create an aggregated feature representation for each transient.
+
+## KMeans Clustering:
+
+- Once we have the spectral features, we use the scikit-learn StandardScalar() object to allow for KMeans clustering to work with the two different features (essentially, this normalizes the features so that MFCC and wavelet coefficients are “worth” the same amount during clustering).
+- From here, we compute the KMeans clusters from min_cluster to max_cluster number of unique labels/clusters. This allows for better generalization between audio files and eliminates the need to manually count the number of unique sounds, which is generally not feasible or efficient.
+- We then compare the silhouette scores of each clustering to identify which number of KMeans clusters most accurately corresponds to the number of distinct transients in the audio signal.
+- Finally, we graph the cluster distributions and replot the waveform with each transient colored according to its KMeans cluster.
+For this example, the purple transients correspond to the woodpecker drums
+
+## Next Steps:
+
+- Depending on what is needed, we might need to use similar drum sounds across files to tune the transient classifier/detection to improve detection
+- For formatting, we will need a way to detect groups of drums, which should not be too hard
+- Might experiment with STFT instead of (or in addition to) wavelets and/or MFCC, but could also be an example of "if it aint broke, dont fix it."
